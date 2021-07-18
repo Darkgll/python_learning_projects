@@ -1,3 +1,3 @@
 # python_learning_projects
 Small projects i did for learning Python.
-By "Udemy" i mean https://www.udemy.com/course/100-days-of-code/
+The course im learning by, is - https://www.udemy.com/course/100-days-of-code/
