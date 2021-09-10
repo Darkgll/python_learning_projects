@@ -18,28 +18,65 @@ from PIL import Image, ImageDraw, ImageFont
 
 # ---------------------------- work with an image ------------------------------- #
 
-def make_watermark():
-    print(image_name)
-    im = Image.open(f"img/{image_name.get()}")
-    width, height = im.size
 
-    draw = ImageDraw.Draw(im)
-    text = watermark_text.get()
+class Watermarking:
+    def __init__(self):
+        self.image = None
+        self.font_name = 'arial'
+        self.font_size = 36
 
-    font = ImageFont.truetype('arial.ttf', 36)
-    textwidth, textheight = draw.textsize(text, font)
+    def change_font(self):
+        if font_type_text.get():
+            print(font_type_text.get())
+            if font_size_text.get():
+                self.font_name = str(font_type_text.get())
+                self.font_size = int(font_size_text.get())
+            else:
+                self.font_name = font_type_text.get()
+                print("Write the font size")
+        else:
+            if font_size_text.get():
+                self.font_size = int(font_size_text.get())
+            else:
+                print("Write the font name")
+                print("Write the font size")
 
-    # calculate the x,y coordinates of the text
-    margin = 10
-    x = width - textwidth - margin
-    y = height - textheight - margin
+    def make_watermark(self):
+        if image_name.get():
+            if watermark_text.get():
+                self.image = Image.open(f"img/{image_name.get()}")
+                width, height = self.image.size
 
-    # draw watermark in the bottom right corner
-    draw.text((x, y), text, font=font)
-    im.show()
+                draw = ImageDraw.Draw(self.image)
+                text = watermark_text.get()
 
-    #Save watermarked image
-    im.save('img/watermark.jpg')
+                font = ImageFont.truetype(f'{self.font_name}.ttf', self.font_size)
+                text_width, text_height = draw.textsize(text, font)
+
+                # calculate the x,y coordinates of the text
+                margin = 10
+                x = width - text_width - margin
+                y = height - text_height - margin
+
+                # draw watermark in the bottom right corner
+                draw.text((x, y), text, font=font)
+
+            else:
+                print("Write the watermark text")
+        else:
+            print("Write the name of an image")
+
+    def show_im(self):
+        self.make_watermark()
+        self.image.show()
+
+    # Save watermarked image
+    def save_im(self):
+        self.make_watermark()
+        self.image.save('img/watermark.jpg')
+
+
+watermarking_image = Watermarking()
 
 
 # ---------------------------- GUI SETUP ------------------------------- #
@@ -48,28 +85,57 @@ window = tkinter.Tk()
 window.title("Watermark a(o)n Image")
 window.config(padx=50, pady=50, bg="white")
 
-canvas = tkinter.Canvas(width=500, height=300, bg="white", highlightthickness=0)
+canvas = tkinter.Canvas(width=800, height=400, bg="white", highlightthickness=0)
 image_preview = tkinter.PhotoImage(file="bg-1.png")
-canvas.create_image(250, 100, image=image_preview)
-canvas.grid(row=0, column=0)
+image_bg = canvas.create_image(400, 100, image=image_preview)
+canvas.grid(row=0, column=0, columnspan=2)
 
-how_to_text_1 = canvas.create_text(250, 250, text='1) Drop an image to "img" folder',
+how_to_text_1 = canvas.create_text(400, 260, text='1) Drop an image to "img" folder',
                                  font=("Courier", 14, "bold"))
-how_to_text_2 = canvas.create_text(250, 280, text='2) Write the name of an image, with extension',
+how_to_text_2 = canvas.create_text(400, 300, text='2) Fill the forms below',
+                                 font=("Courier", 14, "bold"))
+how_to_text_3 = canvas.create_text(400, 360, text="-----------------------------\nDefault font: 'arial', 36",
                                  font=("Courier", 14, "bold"))
 
-image_name = tkinter.Entry(width=30, highlightthickness=1)
-image_name.grid(row=1, column=0)
+image_name_label = tkinter.Label(text="Image name (with extension)", font=("Arial", 14), highlightthickness=1, bg="white", pady=10)
+image_name_label.grid(row=1, column=0)
+image_name = tkinter.Entry(width=40, highlightthickness=1)
+image_name.grid(row=1, column=1)
 
-watermark_label = tkinter.Label(text="\nWatermark text", font=("Arial", 14), highlightthickness=1, bg="white", pady=10)
-watermark_label.grid(row=2, column=0)
+watermark_label = tkinter.Label(text="Watermark text", font=("Arial", 14), highlightthickness=1, bg="white", pady=10)
+watermark_label.grid(row=3, column=0)
 
 watermark_text = tkinter.Entry(width=40, highlightthickness=1)
-watermark_text.grid(row=3, column=0)
+watermark_text.grid(row=3, column=1)
 
-convert_b = tkinter.Button(text="Make a Watermark", command=make_watermark, highlightthickness=0)
-convert_b.grid(row=4, column=0)
+# watermarking options
+options_test = tkinter.Label(text="You may change options of watermarking", font=("Arial", 14),
+                             highlightthickness=1, bg="white", pady=10)
+options_test.grid(row=4, column=0, columnspan=2)
 
+# font_type = tkinter.Label(text="FONT TYPE", font=("Arial", 14), highlightthickness=1, bg="white", pady=10)
+# font_type.grid(row=5, column=0)
+#
+# font_type_text = tkinter.Entry(width=40, highlightthickness=1)
+# font_type_text.grid(row=5, column=1)
+
+font_size = tkinter.Label(text="FONT SIZE", font=("Arial", 14), highlightthickness=1, bg="white", pady=10)
+font_size.grid(row=7, column=0)
+
+font_size_text = tkinter.Entry(width=40, highlightthickness=1)
+font_size_text.grid(row=7, column=1)
+
+change_font_b = tkinter.Button(text="Change FONT", font=("Arial", 14), command=watermarking_image.change_font,
+                               highlightthickness=0)
+change_font_b.grid(row=8, column=0, columnspan=2)
+
+# final steps
+preview_b = tkinter.Button(text="Preview", font=("Arial", 14), command=watermarking_image.show_im, highlightthickness=0)
+preview_b.grid(row=9, column=0, columnspan=2)
+
+convert_b = tkinter.Button(text="Make a Watermark", font=("Arial", 14), command=watermarking_image.save_im,
+                           highlightthickness=0)
+convert_b.grid(row=10, column=0, columnspan=2)
 
 
 window.mainloop()
