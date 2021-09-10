@@ -1,105 +1,75 @@
+import tkinter
+from PIL import Image, ImageDraw, ImageFont
+
+# Using what you have learnt about Tkinter, you will create a desktop application with a Graphical User Interface (GUI)
+# where you can upload an image and use Python to add a watermark logo/text.
+# Normally, you would have to use an image editing software like Photoshop to add the watermark, but your program is
+# going to do it automatically.
+# Use case: e.g you want to start posting your photos to Instagram but you want to add your website to all
+# the photos, you can now use your software to add your website/logo automatically to any image.
+
+# A similar online service is: https://watermarkly.com/
+
+# You might need:
+# https://pypi.org/project/Pillow/
+# https://docs.python.org/3/library/tkinter.html
+# and some Googling.
 
 
-tiles = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
-player = -1
+# ---------------------------- work with an image ------------------------------- #
+
+def make_watermark():
+    print(image_name)
+    im = Image.open(f"img/{image_name.get()}")
+    width, height = im.size
+
+    draw = ImageDraw.Draw(im)
+    text = watermark_text.get()
+
+    font = ImageFont.truetype('arial.ttf', 36)
+    textwidth, textheight = draw.textsize(text, font)
+
+    # calculate the x,y coordinates of the text
+    margin = 10
+    x = width - textwidth - margin
+    y = height - textheight - margin
+
+    # draw watermark in the bottom right corner
+    draw.text((x, y), text, font=font)
+    im.show()
+
+    #Save watermarked image
+    im.save('img/watermark.jpg')
 
 
-def print_grid(board):
-    for row in board:
-        print("|", end="")
-        for tile in row:
-            if tile == 0:
-                tile = "_"
-            if tile == 1:
-                tile = "x"
-            if tile == 2:
-                tile = "o"
-            print(f"{tile}|", end="")
-        print()
+# ---------------------------- GUI SETUP ------------------------------- #
+
+window = tkinter.Tk()
+window.title("Watermark a(o)n Image")
+window.config(padx=50, pady=50, bg="white")
+
+canvas = tkinter.Canvas(width=500, height=300, bg="white", highlightthickness=0)
+image_preview = tkinter.PhotoImage(file="bg-1.png")
+canvas.create_image(250, 100, image=image_preview)
+canvas.grid(row=0, column=0)
+
+how_to_text_1 = canvas.create_text(250, 250, text='1) Drop an image to "img" folder',
+                                 font=("Courier", 14, "bold"))
+how_to_text_2 = canvas.create_text(250, 280, text='2) Write the name of an image, with extension',
+                                 font=("Courier", 14, "bold"))
+
+image_name = tkinter.Entry(width=30, highlightthickness=1)
+image_name.grid(row=1, column=0)
+
+watermark_label = tkinter.Label(text="\nWatermark text", font=("Arial", 14), highlightthickness=1, bg="white", pady=10)
+watermark_label.grid(row=2, column=0)
+
+watermark_text = tkinter.Entry(width=40, highlightthickness=1)
+watermark_text.grid(row=3, column=0)
+
+convert_b = tkinter.Button(text="Make a Watermark", command=make_watermark, highlightthickness=0)
+convert_b.grid(row=4, column=0)
 
 
-def game_quit(u_input):
-    if u_input == "q":
-        return True
-    else:
-        return False
 
-
-def check_correct(u_input):
-    if len(u_input) == 2 and u_input.isnumeric():
-        row = int(u_input[0]) - 1
-        column = int(u_input[1]) - 1
-        print(len(u_input))
-        if row not in [0, 1, 2] or column not in [0, 1, 2]:
-            print("Incorrect choice.")
-            return False
-        else:
-            # correct choice (row and column)
-            if tiles[row][column] == 0:
-                print(tiles[row][column])
-                if player == -1:
-                    tiles[row][column] = 1
-                elif player == 1:
-                    tiles[row][column] = 2
-                return True
-            else:
-                return False
-    else:
-        print("Incorrect choice.")
-        print(len(u_input))
-        return False
-
-
-def win_message():
-    if player == -1:
-        print(f'Player "X" won!')
-    elif player == 1:
-        print(f'Player "O" won!')
-
-
-def win_conditions():
-    status = False
-    for player_number in range(1, 3):
-        print(player_number)
-        for n in range(3):
-            if tiles[n][0] == tiles[n][1] == tiles[n][2] == player_number:
-                win_message()
-                status = True
-            if tiles[0][n] == tiles[1][n] == tiles[2][n] == player_number:
-                win_message()
-                status = True
-        print(player_number)
-        if tiles[0][0] == tiles[1][1] == tiles[2][2] == player_number:
-            win_message()
-            status = True
-        if tiles[0][2] == tiles[1][1] == tiles[2][0] == player_number:
-            win_message()
-            status = True
-    return status
-
-
-game_run = True
-while game_run:
-    print(tiles)
-    print("======================================")
-    if player == -1:
-        print(f'It is player "X" turn.')
-    else:
-        print(f'It is player "O" turn.')
-    print_grid(tiles)
-    choice = input('Choose a tile as an example "22", where first is a row and second is a column.\n'
-                   'If you want to quit, type "q".\n'
-                   'Your choice: ')
-    if game_quit(choice):
-        game_run = False
-
-    if not check_correct(choice):
-        print("not correct")
-        continue
-
-    if win_conditions():
-        game_run = False
-        print_grid(tiles)
-        print("Thank you for playing!")
-    else:
-        player *= -1
+window.mainloop()
