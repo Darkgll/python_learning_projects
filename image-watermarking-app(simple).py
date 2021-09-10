@@ -26,20 +26,10 @@ class Watermarking:
         self.font_size = 36
 
     def change_font(self):
-        if font_type_text.get():
-            print(font_type_text.get())
-            if font_size_text.get():
-                self.font_name = str(font_type_text.get())
-                self.font_size = int(font_size_text.get())
-            else:
-                self.font_name = font_type_text.get()
-                print("Write the font size")
+        if font_size_text.get():
+            self.font_size = int(font_size_text.get())
         else:
-            if font_size_text.get():
-                self.font_size = int(font_size_text.get())
-            else:
-                print("Write the font name")
-                print("Write the font size")
+            print("Write the font size")
 
     def make_watermark(self):
         if image_name.get():
