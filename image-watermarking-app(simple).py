@@ -25,16 +25,17 @@ class Watermarking:
         self.font_name = 'arial'
         self.font_size = 36
 
-    def change_font(self):
-        if font_size_text.get():
-            self.font_size = int(font_size_text.get())
+    def change_font(self, size_of_font):
+        if size_of_font:
+            self.font_size = int(size_of_font)
         else:
             print("Write the font size")
 
-    def make_watermark(self):
-        if image_name.get():
-            if watermark_text.get():
-                self.image = Image.open(f"img/{image_name.get()}")
+    def make_watermark(self, image, watermark):
+        self.image = image
+        if image:
+            if watermark:
+                self.image = Image.open(f"img/{image}")
                 width, height = self.image.size
 
                 draw = ImageDraw.Draw(self.image)
@@ -56,13 +57,13 @@ class Watermarking:
         else:
             print("Write the name of an image")
 
-    def show_im(self):
-        self.make_watermark()
+    def show_im(self, image, watermark):
+        self.make_watermark(image, watermark)
         self.image.show()
 
     # Save watermarked image
-    def save_im(self):
-        self.make_watermark()
+    def save_im(self, image, watermark):
+        self.make_watermark(image, watermark)
         self.image.save('img/watermark.jpg')
 
 
@@ -115,15 +116,18 @@ font_size.grid(row=7, column=0)
 font_size_text = tkinter.Entry(width=40, highlightthickness=1)
 font_size_text.grid(row=7, column=1)
 
-change_font_b = tkinter.Button(text="Change FONT", font=("Arial", 14), command=watermarking_image.change_font,
-                               highlightthickness=0)
+change_font_b = tkinter.Button(text="Change FONT", font=("Arial", 14),
+                               command=lambda: watermarking_image.change_font(font_size_text.get()), highlightthickness=0)
 change_font_b.grid(row=8, column=0, columnspan=2)
 
 # final steps
-preview_b = tkinter.Button(text="Preview", font=("Arial", 14), command=watermarking_image.show_im, highlightthickness=0)
+preview_b = tkinter.Button(text="Preview", font=("Arial", 14),
+                           command=lambda: watermarking_image.show_im(image_name.get(), watermark_text.get()),
+                           highlightthickness=0)
 preview_b.grid(row=9, column=0, columnspan=2)
 
-convert_b = tkinter.Button(text="Make a Watermark", font=("Arial", 14), command=watermarking_image.save_im,
+convert_b = tkinter.Button(text="Make a Watermark", font=("Arial", 14),
+                           command=lambda: watermarking_image.save_im(image_name.get(), watermark_text.get()),
                            highlightthickness=0)
 convert_b.grid(row=10, column=0, columnspan=2)
 
